@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title>Ticketing</title>
+    <style>
+        html, body {
+            height: 100%; /* 화면 전체 높이 차지 */
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            background: white;
+        }
+        #main-title {
+            color: #2C2C2C;
+            flex-grow: 0.05;
+        }
+        #button-container {
+            display: flex;
+            justify-content: center; /* 가로 중앙 정렬 */
+            align-items: center;
+        }
+        #round-button {
+            width: 200px;
+            height: 200px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            color: white;
+            background: darkslateblue;
+            font-size: 30px;
+        }
+        #round-button:hover {
+            transform: scale(1.1); /* 크기를 10% 정도 확대 */
+        }
+        #name-value {
+            display: none;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            font-family: 'Noto Sans KR', sans-serif;
+            color: #2C2C2C;
+        }
+        #countdown {
+            font-size: 30px;
+            margin-bottom: 30px;
+            color: darkslateblue;
+            font-weight: bolder;
+            text-align: center;
+        }
+        #name-section{
+            flex-grow: 0.1;
+        }
+        #info-section {
+            flex-direction: column;
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+        }
+        #ticketing-section {
+            flex-grow: 4;
+        }
+        #reset-button {
+            width: 100px;
+            height: 40px;
+            border: none;
+            color: white;
+            background: darkslateblue;
+            cursor: pointer;
+            border-radius: 10px;
+            margin-left: 10px;
+            font-weight: bold;
+        }
+        #reset-button:hover {
+            transform: scale(1.1); /* 크기를 10% 정도 확대 */
+        }
+        #name-section {
+            display: flex;
+            align-items: center;
+        }
+        #name-input-box {
+            border-color: darkslateblue;
+            padding: 10px 20px;
+            font-size: 15px;
+            font-weight: bold;
+            font-family: 'Noto Sans KR', sans-serif;
+            border-radius: 10px;
+        }
+        #name-input-button {
+            width: 60px;
+            height: 40px;
+            border: none;
+            color: white;
+            background: darkslateblue;
+            cursor: pointer;
+            border-radius: 10px;
+            margin-left: 10px;
+            font-weight: bold;
+        }
+        #move-rank-button {
+            width: 200px;
+            height: 40px;
+            border: none;
+            color: white;
+            background: darkslateblue;
+            cursor: pointer;
+            border-radius: 10px;
+            margin-left: 10px;
+            font-weight: bold;
+        }
+        #move-rank-button:hover {
+            transform: scale(1.1); /* 크기를 10% 정도 확대 */
+        }
+        #page-move-section {
+            flex-grow: 1;
+        }
+    </style>
+</head>
+<body>
+    <div id="info-section">
+        <h1 id="main-title">Ticketing Practice</h1>
+        <div id="name-section">
+            <p id="name-value"></p>
+            <button id="reset-button">닉네임 변경</button>
+        </div>
+        <div id="name-input-section">
+            <input id="name-input-box" type="text" name="name" placeholder="닉네임을 입력해주세요."/>
+            <button id="name-input-button" type="button">완료</button>
+        </div>
+    </div>
+    <div id="page-move-section">
+        <button id="move-rank-button" type="button">랭킹 페이지로 이동</button>
+    </div>
+    <div id="ticketing-section">
+        <div id="countdown">잠시후 카운트다운이 시작됩니다</div>
+        <div id="button-container">
+            <button id="round-button">Click</button>
+        </div>
+    </div>
+</body>
+<script type="module">
+    const HOST = "http://ticketing.ddns.net";
+    // const HOST = "http://localhost:8080";
+    const ticket_button = document.getElementById("round-button")
+    ticket_button.addEventListener("click", () => {
+        if (document.cookie.indexOf("name=") === -1) {
+            alert("닉네임을 입력해주세요.");
+            return
+        }
+        fetch(`${HOST}/api/ticket`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                name: getNickname()
+            })
+        }).then(response => {
+            if (!response.ok) {
+                throw new Error("Request is failed");
+            }
+            alert("예매 성공")
+            window.location.href = `${HOST}/rank`;
+        }).catch(error => {
+            alert("에매 실패")
+        })
+    })
+
+    // 페이지 이동 로직
+    const button = document.getElementById("move-rank-button")
+    button.addEventListener("click", () =>{
+        window.location.href = `${HOST}/rank`;
+    })
+
+    // 닉네임 입력 로직
+    const name_button = document.getElementById("name-input-button");
+    const name_input_section = document.getElementById("name-input-section");
+    const name_value = document.getElementById("name-value");
+    name_button.addEventListener("click", () => {
+        const name = document.getElementById("name-input-box").value;
+        if (name === "" || !name) {
+            alert("닉네임을 입력해주세요.");
+            return
+        }
+        document.cookie = `name=${name}; path=/`;
+        location.reload();
+    })
+
+    // 닉네임 변경 로직
+    const name_reset_button = document.getElementById("reset-button");
+    name_reset_button.addEventListener("click", () => {
+        document.cookie = `name=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/`;
+        location.reload();
+    })
+
+    // 페이지 로드시 마다 실행 (새로고침 포함)
+    window.onload = () => {
+        if (document.cookie.indexOf("name=") !== -1) {
+            name_input_section.style.display = "none";
+            name_value.style.display = "block";
+            name_value.textContent = `${getNickname()}님 환영합니다`;
+        } else {
+            const name_section = document.getElementById("name-section");
+            name_section.style.display = "none";
+        }
+    };
+
+    // 닉네임 값 가져오기
+    function getNickname() {
+        const cookies = document.cookie.split(';');
+        let cookie_key = "name";
+        for (let i = 0; i < cookies.length; i++) {
+            let cookie = cookies[i].trim(); // 공백 제거
+            if (cookie.startsWith(cookie_key + '=')) {
+                return cookie.substring(cookie_key.length + 1);
+            }
+        }
+    }
+
+    function startCountdown() {
+        let isCountDownOn = false;
+        setInterval(() => {
+            const seconds = new Date().getSeconds();
+            if (seconds >= 30 && !isCountDownOn) {
+                displayCountDown(60 - seconds);
+                isCountDownOn = true;
+            }
+            if (seconds < 30) {
+                isCountDownOn = false;
+            }
+        }, 1000)
+    }
+
+    function displayCountDown() {
+        const displayElement = document.getElementById('countdown'); // 시간을 표시할 요소 선택
+        const countdownInterval = setInterval(() => {
+            const remainingSecond = 60 - new Date().getSeconds();
+            if (remainingSecond === 60) {
+                displayElement.innerText = "Ticketing Start!";
+                clearInterval(countdownInterval);
+            } else {
+                displayElement.innerText = remainingSecond.toString();
+            }
+        }, 1000);
+    }
+
+    startCountdown();
+</script>
+</html>

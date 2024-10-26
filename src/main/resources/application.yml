@@ -1,0 +1,12 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,prometheus  # prometheus 엔드포인트 활성화
+  metrics:
+    export:
+      prometheus:
+        enabled: true  # prometheus 활성화
+  endpoint:
+    health:
+      show-details: always
