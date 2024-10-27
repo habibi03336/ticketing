@@ -1,4 +1,4 @@
-package com.example.ticketing.chat;
+package com.example.chat;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
