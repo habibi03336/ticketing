@@ -62,7 +62,10 @@
             justify-content: flex-start;
         }
         #ticketing-section {
-            flex-grow: 4;
+            flex-grow: 2;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
         }
         #reset-button {
             width: 100px;
@@ -118,6 +121,20 @@
         #page-move-section {
             flex-grow: 1;
         }
+        #chatting-section {
+            flex-grow: 4;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+        #chatting-box {
+            background-color: white;
+            border: 2px solid darkslateblue;
+            width: 400px;
+            border-radius: 8px;        /* 모서리 둥글게 */
+            padding: 20px;             /* 내부 여백 */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
+        }
     </style>
 </head>
 <body>
@@ -141,6 +158,11 @@
             <button id="round-button">Click</button>
         </div>
     </div>
+    <div id="chatting-section">
+        <div id="chatting-box">
+            Chatting Box
+        </div>
+    </div>
 </body>
 <script type="module">
     const HOST = "http://ticketing.ddns.net";
@@ -151,6 +173,7 @@
             alert("닉네임을 입력해주세요.");
             return
         }
+
         fetch(`${HOST}/api/ticket`, {
             method: "POST",
             headers: {
@@ -185,6 +208,10 @@
         if (name === "" || !name) {
             alert("닉네임을 입력해주세요.");
             return
+        }
+        const seconds = new Date().getSeconds();
+        if (seconds > 30) {
+            alert("예매 실패")
         }
         document.cookie = `name=${name}; path=/`;
         location.reload();
