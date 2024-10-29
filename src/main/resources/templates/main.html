@@ -139,10 +139,12 @@
             background-color: white;
             border: 2px solid darkslateblue;
             width: 400px;
+            height: 200px;
             border-radius: 8px 8px 0px 0px;        /* 모서리 둥글게 */
             padding: 20px;             /* 내부 여백 */
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
             flex-grow: 6;
+            overflow-y: scroll;
         }
         #chatting-input-section {
             background-color: white;
@@ -209,10 +211,25 @@
             <button id="chatting-send-button">전송</button>
         </div>
     </div>
-</body>
+</body>4
 <script type="module">
-    const HOST = "http://ticketing.ddns.net";
+    // 호스트 설정
+    const HOST = "https://ticketing.ddns.net";
     // const HOST = "http://localhost:8080";
+
+    // 페이지 로드시 마다 실행 (새로고침 포함)
+    window.onload = () => {
+        if (document.cookie.indexOf("name=") !== -1) {
+            name_input_section.style.display = "none";
+            name_value.style.display = "block";
+            name_value.textContent = `${getNickname()}님 환영합니다`;
+        } else {
+            const name_section = document.getElementById("name-section");
+            name_section.style.display = "none";
+        }
+    };
+
+
     const ticket_button = document.getElementById("round-button")
     ticket_button.addEventListener("click", () => {
         if (document.cookie.indexOf("name=") === -1) {
@@ -270,17 +287,67 @@
         location.reload();
     })
 
-    // 페이지 로드시 마다 실행 (새로고침 포함)
-    window.onload = () => {
-        if (document.cookie.indexOf("name=") !== -1) {
-            name_input_section.style.display = "none";
-            name_value.style.display = "block";
-            name_value.textContent = `${getNickname()}님 환영합니다`;
-        } else {
-            const name_section = document.getElementById("name-section");
-            name_section.style.display = "none";
-        }
-    };
+    function setChattingSse() {
+        const eventSource = new EventSource(`${HOST}/api/sse-stream`);
+        eventSource.addEventListener("chat-event", (event) => {
+            console.log("sse 이벤트 수신");
+            const chattingBox = document.getElementById("chatting-box-section");
+            const childCount = chattingBox.childElementCount;
+            const chatData = JSON.parse(event.data);
+            if (childCount !== chatData.length) {
+                chattingBox.innerHTML = "";
+                chatData.forEach(item => {
+                    const newParagraph = document.createElement("p");
+                    newParagraph.textContent = item.name + ": " + item.text + "  [" + item.sendAt + "]"
+                    chattingBox.appendChild(newParagraph);
+                });
+                chattingBox.scrollTop = chattingBox.scrollHeight;
+            }
+        });
+        eventSource.onerror = (error) => {
+            console.error("Error:", error);
+        };
+    }
+
+    // 채팅 이벤트 설정
+    function setChatEventListener() {
+        const button = document.getElementById("chatting-send-button");
+        button.addEventListener("click", () => {
+            const name = getNickname();
+            if (!name) {
+                alert("채팅을 입력하려면 닉네임을 입력해주세요.")
+                return
+            }
+            const chatting = document.getElementById("chatting-input").value;
+            if (!chatting) {
+                alert("채팅을 입력해주세요.")
+                return;
+            }
+            fetch(`${HOST}/api/chat`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    text: chatting,
+                    name: name
+                })
+            }).then(response => {
+                if (!response.ok) {
+                    throw new Error("Request is failed");
+                }
+                document.getElementById("chatting-input").value = "";
+            }).catch(e => {
+                alert("채팅 전송 실패")
+            })
+        });
+        document.getElementById("chatting-input").addEventListener("keypress", function (e) {
+            if (e.key === "Enter") { // 엔터 키를 눌렀을 때
+                e.preventDefault();   // 기본 동작 방지
+                button.click();
+            }
+        });
+    }
 
     // 닉네임 값 가져오기
     function getNickname() {
@@ -322,5 +389,7 @@
     }
 
     startCountdown();
+    setChatEventListener();
+    setChattingSse();
 </script>
 </html>

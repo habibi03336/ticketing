@@ -1,11 +1,13 @@
-package com.example.ticketing.ticket.dto;
+package com.example.ticketing.chat;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
-public class TicketRequestDto {
+@ToString
+public class ChatRequestDto {
     private String name;
     private String text;
 }
