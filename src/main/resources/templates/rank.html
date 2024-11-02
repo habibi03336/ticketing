@@ -5,13 +5,13 @@
     <title>Rank</title>
     <style>
         html, body {
-        height: 100%; /* 화면 전체 높이 차지 */
-        margin: 0;
-        display: flex;
-        justify-content: flex-start;
-        align-items: center;
-        flex-direction: column;
-        background: white;
+            height: 100%; /* 화면 전체 높이 차지 */
+            margin: 0;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            flex-direction: column;
+            background: white;
         }
         #rank-table {
             width: 300px;
@@ -85,36 +85,36 @@
     </style>
 </head>
 <body>
-    <h1 id="main-title">Ticketing Rank</h1>
-    <div id="button-section">
-        <button id="move-page-btn">티켓팅 페이지로 이동</button>
-    </div>
-    <div id="rank-section">
-        <table id="rank-table">
-            <thead>
-            <tr>
-                <th>순위</th>
-                <th>닉네임</th>
-                <th>시간</th>
-            </tr>
-            </thead>
-            <tbody id="rank-body">
-<!--                <tr>-->
-<!--                    <td>1</td>-->
-<!--                    <td>호야</td>-->
-<!--                    <td>12:00</td>-->
-<!--                </tr>-->
-<!--                <tr>-->
-<!--                    <td>2</td>-->
-<!--                    <td>은댕</td>-->
-<!--                    <td>12:00</td>-->
-<!--                </tr>-->
-            </tbody>
-        </table>
-    </div>
+<h1 id="main-title">Ticketing Rank</h1>
+<div id="button-section">
+    <button id="move-page-btn">티켓팅 페이지로 이동</button>
+</div>
+<div id="rank-section">
+    <table id="rank-table">
+        <thead>
+        <tr>
+            <th>순위</th>
+            <th>닉네임</th>
+            <th>시간</th>
+        </tr>
+        </thead>
+        <tbody id="rank-body">
+        <!--                <tr>-->
+        <!--                    <td>1</td>-->
+        <!--                    <td>호야</td>-->
+        <!--                    <td>12:00</td>-->
+        <!--                </tr>-->
+        <!--                <tr>-->
+        <!--                    <td>2</td>-->
+        <!--                    <td>은댕</td>-->
+        <!--                    <td>12:00</td>-->
+        <!--                </tr>-->
+        </tbody>
+    </table>
+</div>
 </body>
 <script>
-    const HOST = "http://ticketing.ddns.net";
+    const HOST = "https://ticketing.ddns.net";
     // const HOST = "http://localhost:8080";
 
     function getNickname() {
@@ -197,8 +197,8 @@
                     })
                     markMyRank()
                 }).catch(error => {
-                    console.log(error);
-                })
+                console.log(error);
+            })
         }, 1000)
     }
 
